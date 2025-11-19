@@ -15,13 +15,13 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
     async_add_entities(
         [
-            KMtronicSwitch(coordinator, host, relay, entry.unique_id)
+            ALLINSwitch(coordinator, host, relay, entry.unique_id)
             for relay in hub.relays
         ]
     )
 
 
-class KMtronicSwitch(CoordinatorEntity, SwitchEntity):
+class ALLINSwitch(CoordinatorEntity, SwitchEntity):
     """ALLIN Switch Entity."""
 
     def __init__(self, coordinator, host, relay, config_entry_id):
