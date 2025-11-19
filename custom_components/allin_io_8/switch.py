@@ -1,31 +1,40 @@
 """ALLIN Switch integration."""
 
+from __future__ import annotations
+
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from homeassistant.core import HomeAssistant
+from homeassistant.config_entries import ConfigEntry
 
 from .const import DATA_COORDINATOR, DATA_HOST, DATA_HUB, DOMAIN
 
 
-async def async_setup_entry(hass, entry, async_add_entities):
-    """Config entry example."""
-    coordinator = hass.data[DOMAIN][entry.entry_id][DATA_COORDINATOR]
-    hub = hass.data[DOMAIN][entry.entry_id][DATA_HUB]
-    host = hass.data[DOMAIN][entry.entry_id][DATA_HOST]
+async def async_setup_entry(
+    hass: HomeAssistant,
+    entry: ConfigEntry,
+    async_add_entities,
+) -> None:
+    """Set up ALLIN switch entities from a config entry."""
+    data = hass.data[DOMAIN][entry.entry_id]
+    coordinator = data[DATA_COORDINATOR]
+    hub = data[DATA_HUB]
+    host = data[DATA_HOST]
+
+    # Récupère la liste des relais depuis la carte
     await hub.async_get_relays()
 
-    async_add_entities(
-        [
-            ALLINSwitch(coordinator, host, relay, entry.unique_id)
-            for relay in hub.relays
-        ]
-    )
+    entities: list[ALLINSwitch] = [
+        ALLINSwitch(coordinator, host, relay, entry.entry_id)
+        for relay in hub.relays
+    ]
+    async_add_entities(entities)
 
 
 class ALLINSwitch(CoordinatorEntity, SwitchEntity):
     """ALLIN Switch Entity."""
 
     def __init__(self, coordinator, host, relay, config_entry_id):
-        """Pass coordinator to CoordinatorEntity."""
         super().__init__(coordinator)
         self._host = host
         self._relay = relay
@@ -48,35 +57,38 @@ class ALLINSwitch(CoordinatorEntity, SwitchEntity):
 
     @property
     def entity_registry_enabled_default(self) -> bool:
-        """Return if the entity should be enabled when first added to the entity registry."""
+        """Return if the entity is enabled by default."""
         return True
 
-        @property
+    @property
     def is_on(self):
-        """Retourne l'état actuel du relais (on/off)."""
+        """Return the current state of the relay."""
         relay = self._relay
 
-        # Si la lib a bien un attribut is_on, on l'utilise
+        # Selon la version de pykmtronic, différents attributs peuvent exister
         if hasattr(relay, "is_on"):
             return relay.is_on
 
-        # Sinon, on essaie avec state (souvent 0/1 ou True/False)
         if hasattr(relay, "state"):
             return bool(relay.state)
 
-        # Ou status, selon la version de la lib
         if hasattr(relay, "status"):
             return bool(relay.status)
 
         # Si on ne sait pas déterminer, on laisse l'état inconnu
         return None
 
+    @property
+    def icon(self) -> str:
+        """Icon to use in the frontend."""
+        return "mdi:dip-switch"
+
     async def async_turn_on(self, **kwargs) -> None:
         """Turn the switch on."""
         await self._relay.turn_on()
-        self.async_write_ha_state()
+        await self.coordinator.async_request_refresh()
 
     async def async_turn_off(self, **kwargs) -> None:
         """Turn the switch off."""
         await self._relay.turn_off()
-        self.async_write_ha_state()
+        await self.coordinator.async_request_refresh()
