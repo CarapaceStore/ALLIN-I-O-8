@@ -82,12 +82,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     }
 
     device_registry = dr.async_get(hass)
+    host = entry.data[DATA_HOST]
+
     device_registry.async_get_or_create(
         config_entry_id=entry.entry_id,
         identifiers={(DOMAIN, host)},
         manufacturer=MANUFACTURER,
         name=f"ALLIN I/O 8 ({host})",
     )
+
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
