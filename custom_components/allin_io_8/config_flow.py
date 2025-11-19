@@ -1,4 +1,4 @@
-"""Config flow for kmtronic integration."""
+"""Config flow for ALLIN integration."""
 import logging
 
 import aiohttp
