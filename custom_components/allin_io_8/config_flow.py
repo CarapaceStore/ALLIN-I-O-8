@@ -1,4 +1,4 @@
-"""Config flow pour l'intégration ALLIN I/O 8 (KMTronic)."""
+"""Config flow pour l'intégration ALLIN I/O 8."""
 
 from __future__ import annotations
 
@@ -27,11 +27,9 @@ class AllinIO8ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         errors: dict[str, str] = {}
 
         if user_input is not None:
-            # on utilise l'hôte comme identifiant unique
             await self.async_set_unique_id(user_input[CONF_HOSTNAME])
             self._abort_if_unique_id_configured()
 
-            # on crée l'entrée de configuration telle quelle
             return self.async_create_entry(
                 title=user_input[CONF_HOSTNAME],
                 data=user_input,
