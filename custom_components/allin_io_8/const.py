@@ -1,6 +1,6 @@
-"""Constants for the kmtronic integration."""
+"""Constants for the ALLIN integration."""
 
-DOMAIN = "kmtronic"
+DOMAIN = "ALLIN"
 
 CONF_HOSTNAME = "host"
 CONF_USERNAME = "username"
