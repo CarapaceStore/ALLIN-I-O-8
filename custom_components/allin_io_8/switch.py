@@ -21,7 +21,6 @@ async def async_setup_entry(
     hub = data[DATA_HUB]
     host = data[DATA_HOST]
 
-    # Récupère la liste des relais depuis la carte
     await hub.async_get_relays()
 
     entities: list[ALLINSwitch] = [
@@ -65,7 +64,6 @@ class ALLINSwitch(CoordinatorEntity, SwitchEntity):
         """Return the current state of the relay."""
         relay = self._relay
 
-        # Selon la version de pykmtronic, différents attributs peuvent exister
         if hasattr(relay, "is_on"):
             return relay.is_on
 
@@ -75,7 +73,6 @@ class ALLINSwitch(CoordinatorEntity, SwitchEntity):
         if hasattr(relay, "status"):
             return bool(relay.status)
 
-        # Si on ne sait pas déterminer, on laisse l'état inconnu
         return None
 
     @property
