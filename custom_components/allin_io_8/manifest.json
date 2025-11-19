@@ -1,0 +1,10 @@
+{
+  "domain": "allin_io_8",
+  "name": "ALLIN I/O 8",
+  "version": "0.0.1",
+  "documentation": "https://github.com/CarapaceStore/ALLIN-I-O-8",
+  "requirements": [],
+  "dependencies": [],
+  "codeowners": ["@CarapaceStore"],
+  "iot_class": "local_polling"
+}
