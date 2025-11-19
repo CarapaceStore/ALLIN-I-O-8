@@ -1,16 +1,13 @@
-"""Constants for the ALLIN integration."""
+"""Constantes pour l'intégration ALLIN I/O 8."""
 
-DOMAIN = "ALLIN"
+DOMAIN = "allin_io_8"
 
-CONF_HOSTNAME = "host"
+CONF_HOSTNAME = "hostname"
 CONF_USERNAME = "username"
 CONF_PASSWORD = "password"
 
+DATA_COORDINATOR = "coordinator"
 DATA_HUB = "hub"
 DATA_HOST = "host"
-DATA_COORDINATOR = "coordinator"
 
-MANUFACTURER = "KMtronic"
-ATTR_MANUFACTURER = "manufacturer"
-ATTR_IDENTIFIERS = "identifiers"
-ATTR_NAME = "name"
+MANUFACTURER = "ALLIN"
