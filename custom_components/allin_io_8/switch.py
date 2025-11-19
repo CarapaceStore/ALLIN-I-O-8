@@ -1,4 +1,4 @@
-"""KMtronic Switch integration."""
+"""ALLIN Switch integration."""
 
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
@@ -22,7 +22,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
 
 class KMtronicSwitch(CoordinatorEntity, SwitchEntity):
-    """KMtronic Switch Entity."""
+    """ALLIN Switch Entity."""
 
     def __init__(self, coordinator, host, relay, config_entry_id):
         """Pass coordinator to CoordinatorEntity."""
