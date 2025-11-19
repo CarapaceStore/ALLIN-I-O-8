@@ -51,10 +51,25 @@ class ALLINSwitch(CoordinatorEntity, SwitchEntity):
         """Return if the entity should be enabled when first added to the entity registry."""
         return True
 
-    @property
+        @property
     def is_on(self):
-        """Return entity state."""
-        return self._relay.is_on
+        """Retourne l'état actuel du relais (on/off)."""
+        relay = self._relay
+
+        # Si la lib a bien un attribut is_on, on l'utilise
+        if hasattr(relay, "is_on"):
+            return relay.is_on
+
+        # Sinon, on essaie avec state (souvent 0/1 ou True/False)
+        if hasattr(relay, "state"):
+            return bool(relay.state)
+
+        # Ou status, selon la version de la lib
+        if hasattr(relay, "status"):
+            return bool(relay.status)
+
+        # Si on ne sait pas déterminer, on laisse l'état inconnu
+        return None
 
     async def async_turn_on(self, **kwargs) -> None:
         """Turn the switch on."""
