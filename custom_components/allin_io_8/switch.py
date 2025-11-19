@@ -7,7 +7,7 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
 
-from .const import DATA_COORDINATOR, DATA_HOST, DATA_HUB, DOMAIN
+from .const import DATA_COORDINATOR, DATA_HOST, DATA_HUB, DOMAIN, MANUFACTURER
 
 
 async def async_setup_entry(
@@ -56,6 +56,15 @@ class ALLINSwitch(CoordinatorEntity, SwitchEntity):
     def unique_id(self) -> str:
         """Return the unique ID of the entity."""
         return f"{self._config_entry_id}_relay{self._relay.id}"
+
+    @property
+    def device_info(self) -> dict:
+        """Return device info for linking entities to the device."""
+        return {
+            "identifiers": {(DOMAIN, self._host)},
+            "name": f"ALLIN I/O 8 ({self._host})",
+            "manufacturer": MANUFACTURER,
+        }
 
     @property
     def entity_registry_enabled_default(self) -> bool:
