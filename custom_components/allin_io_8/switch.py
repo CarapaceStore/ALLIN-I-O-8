@@ -34,11 +34,13 @@ async def async_setup_entry(
 class ALLINSwitch(CoordinatorEntity, SwitchEntity):
     """ALLIN Switch Entity."""
 
-    def __init__(self, coordinator, host, relay, config_entry_id):
+    def __init__(self, coordinator, host, relay, config_entry_id) -> None:
         super().__init__(coordinator)
         self._host = host
         self._relay = relay
         self._config_entry_id = config_entry_id
+
+    # ---- Propriétés de base ----
 
     @property
     def available(self) -> bool:
@@ -61,36 +63,37 @@ class ALLINSwitch(CoordinatorEntity, SwitchEntity):
         return True
 
     @property
-    def is_on(self):
-        """Return the current state of the relay."""
-        relay = self._relay
-
-        # API officielle : propriété is_on
-        if hasattr(relay, "is_on"):
-            return relay.is_on
-
-        # fallback si jamais ta version expose state ou status
-        if hasattr(relay, "state"):
-            return bool(relay.state)
-
-        if hasattr(relay, "status"):
-            return bool(relay.status)
-
-        return None
-
-    @property
     def icon(self) -> str:
         """Icon to use in the frontend."""
         return "mdi:dip-switch"
 
+    # ---- État ----
+
+    @property
+    def is_on(self):
+        """Return the current state of the relay."""
+        relay = self._relay
+
+        # API pykmtronic : is_energised = True => ON
+        if hasattr(relay, "is_energised"):
+            return relay.is_energised
+
+        # fallback éventuel si la lib évolue
+        if hasattr(relay, "is_on"):
+            return relay.is_on
+
+        return None
+
+    # ---- Commandes ON / OFF ----
+
     async def async_turn_on(self, **kwargs) -> None:
         """Turn the switch on."""
-        # API pykmtronic : energise = ON
+        # API pykmtronic : energise()
         await self._relay.energise()
         await self.coordinator.async_request_refresh()
 
     async def async_turn_off(self, **kwargs) -> None:
         """Turn the switch off."""
-        # API pykmtronic : deenergise = OFF
-        await self._relay.deenergise()
+        # API pykmtronic : de_energise()
+        await self._relay.de_energise()
         await self.coordinator.async_request_refresh()
