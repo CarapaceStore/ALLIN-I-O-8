@@ -1,9 +1,9 @@
 {
   "domain": "allin_io_8",
-  "name": "ALLIN I/O 8",
+  "name": "ALLIN I/O 8 (KMtronic)",
   "version": "0.0.1",
   "documentation": "https://github.com/CarapaceStore/ALLIN-I-O-8",
-  "requirements": [],
+  "requirements": ["pykmtronic==0.3.0"],
   "dependencies": [],
   "codeowners": ["@CarapaceStore"],
   "iot_class": "local_polling"
