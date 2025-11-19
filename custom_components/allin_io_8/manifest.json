@@ -1,6 +1,6 @@
 {
   "domain": "allin_io_8",
-  "name": "ALLIN I/O 8 (KMtronic)",
+  "name": "ALLIN I/O 8",
   "version": "0.0.1",
   "documentation": "https://github.com/CarapaceStore/ALLIN-I-O-8",
   "requirements": ["pykmtronic==0.3.0"],
