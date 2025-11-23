@@ -33,12 +33,10 @@ _LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup(hass: HomeAssistant, config: dict):
-    """Set up the kmtronic component."""
     return True
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
-    """Set up kmtronic from a config entry."""
 
     session = aiohttp_client.async_get_clientsession(hass)
     auth = Auth(
@@ -91,13 +89,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         name=f"ALLIN I/O 8 ({host})",
     )
 
-
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
     return True
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
-    """Unload a config entry."""
     unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
     if unload_ok:
         hass.data[DOMAIN].pop(entry.entry_id)
