@@ -16,14 +16,11 @@ from .const import (
 
 _LOGGER = logging.getLogger(__name__)
 
-
 class AllinIO8ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    """Gestion du flux de configuration pour ALLIN I/O 8."""
 
     VERSION = 1
 
     async def async_step_user(self, user_input=None):
-        """Première étape de config (écran principal)."""
         errors: dict[str, str] = {}
 
         if user_input is not None:
