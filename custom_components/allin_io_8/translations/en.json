@@ -1,22 +1,22 @@
 {
     "config": {
         "abort": {
-            "already_configured": "Device is already configured"
+            "already_configured": "L’appareil est déjà configuré"
         },
         "error": {
-            "cannot_connect": "Failed to connect",
-            "invalid_auth": "Invalid authentication",
-            "unknown": "Unexpected error"
+            "cannot_connect": "Échec de la connexion",
+            "invalid_auth": "Authentification invalide",
+            "unknown": "Erreur inattendue"
         },
         "step": {
             "user": {
                 "data": {
-                    "host": "Host",
-                    "password": "Password",
-                    "username": "Username"
+                    "host": "Hôte",
+                    "password": "Mot de passe",
+                    "username": "Nom d’utilisateur"
                 }
             }
         }
     },
-    "title": "ALLIN Systeme"
+    "title": "ALLON Systeme"
 }
