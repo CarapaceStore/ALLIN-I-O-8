@@ -1,169 +1,213 @@
-ALLIN I/O 8 — Intégration Home Assistant
+# 📘 ALLIN I/O 8 — Intégration Home Assistant  
+**Contrôleur de relais ALLIN, intégration locale 100% autonome**
 
-Contrôleur de relais ALLIN, intégration locale 100% autonome
+---
 
-Présentation
+## 🔧 Présentation
 
-ALLIN I/O 8 est une intégration Home Assistant permettant de piloter directement les 8 relais du contrôleur matériel ALLIN.
-Elle est entièrement locale, simple, rapide, sans cloud, et pensée pour un usage fiable dans les installations embarquées, autonomes ou domotiques.
+**ALLIN I/O 8** est une intégration Home Assistant permettant de piloter directement les **8 relais** du contrôleur matériel ALLIN.  
+Elle est **entièrement locale**, simple, rapide, sans cloud, et pensée pour un usage fiable dans les installations embarquées, autonomes ou domotiques.
 
-L’intégration expose chaque relais comme une entité switch dans Home Assistant, permettant l’automatisation et le contrôle depuis l’interface utilisateur.
+L’intégration expose chaque relais comme une **entité `switch`** dans Home Assistant, permettant l’automatisation et le contrôle depuis l’interface utilisateur.
 
-Fonctionnalités
-Contrôle complet des relais
+---
 
-Allumer / éteindre chaque relais individuellement
+## 🚀 Fonctionnalités
 
-Rafraîchissement automatique de l’état toutes les 30 secondes
+### ✔️ Contrôle complet des relais
+- Allumer / éteindre chaque relais individuellement  
+- Rafraîchissement automatique de l’état toutes les 30 secondes  
+- Communication locale directe avec le module ALLIN
 
-Basée sur la librairie Python interne (API locale)
+### ✔️ Installation simple
+- Intégration personnalisée via `custom_components`  
+- Détection dans “Ajouter une intégration” sous le nom **ALLIN I/O 8**  
+- Aucune configuration YAML nécessaire (config flow via l’UI)
 
-Installation simple
+### ✔️ Fiabilité Home Assistant
+- Utilisation d’un `DataUpdateCoordinator` pour centraliser les mises à jour  
+- Le module ALLIN est exposé comme **Appareil** dans Home Assistant  
+- Chaque relais est exposé comme une entité `switch`  
+- Gestion des erreurs de connexion et d’authentification pendant la configuration
 
-Compatible avec le chargement manuel (custom_components)
+### ✔️ 100% local
+- Aucun service cloud requis  
+- Fonctionne en environnement offline (van, bateau, site isolé…)  
+- Idéal pour les systèmes autonomes, véhicules de loisirs, etc.
 
-Apparaît automatiquement dans “Ajouter une intégration”
+---
 
-Fiabilité Home Assistant
+## 📦 Installation
 
-Suivi via un DataUpdateCoordinator
+### 🛠️ Méthode : manuel via `custom_components`
 
-Reconnaissance du matériel en tant que device
+1. **Télécharger** la dernière version du projet (archive ZIP) depuis le dépôt GitHub.
+2. **Extraire** l’archive en local.
+3. **Copier** le dossier :
 
-Entités nommées automatiquement
+   ```text
+   custom_components/allin_io_8
+   ```
 
-Gestion des erreurs réseau / authentification pendant le config flow
+   dans le répertoire `config` de ton Home Assistant, par exemple :
 
-Totalement locale
+   ```text
+   /config/custom_components/allin_io_8
+   ```
 
-Aucun cloud
+4. **Redémarrer** Home Assistant.
+5. Aller dans **Paramètres → Appareils & services → Ajouter une intégration**.
+6. Rechercher **ALLIN I/O 8** et suivre l’assistant de configuration.
 
-Aucune dépendance externe
+---
 
-Fonctionne en environnement offline (van, bateau, off-grid…)
-
-Installation
-Méthode : Manuel via custom_components
-
-Télécharger la dernière release ZIP :
-(Par exemple : ALLIN-I-O-8-main-reviewed.zip)
-
-Extraire son contenu.
-
-Copier le dossier :
-
-custom_components/allin_io_8
-
-
-dans ton Home Assistant :
-
-/config/custom_components/allin_io_8
-
-
-Redémarrer Home Assistant.
-
-Aller dans Paramètres → Appareils & Services → Ajouter une intégration
-Chercher : ALLIN I/O 8
-
-Configuration
+## ⚙️ Configuration
 
 Lors de l’ajout de l’intégration, Home Assistant te demande :
 
-Champ	Description
-Adresse IP / Host	Adresse du module ALLIN (ex: 192.168.1.50)
-Nom d’utilisateur	Identifiant de connexion (si protection activée)
-Mot de passe	Mot de passe d’accès à l’API locale
+| Champ                    | Description                                    |
+|--------------------------|------------------------------------------------|
+| **Adresse IP / Host**    | Adresse IP ou hostname du module ALLIN (ex: `192.168.1.50`) |
+| **Nom d’utilisateur**    | Identifiant de connexion (si authentification activée) |
+| **Mot de passe**         | Mot de passe d’accès à l’interface / API      |
 
-Ensuite l’intégration :
+Pendant la configuration, l’intégration :
 
-Vérifie la connexion
+- teste la connexion au module ALLIN,
+- valide les identifiants,
+- récupère la liste des relais,
+- crée automatiquement les entités `switch`.
 
-Valide les identifiants
+En cas de problème, des messages d’erreur explicites sont affichés :
 
-Découvre les relais
+- `cannot_connect` → impossible de joindre le module  
+- `invalid_auth` → identifiants incorrects  
+- `unknown` → erreur inattendue
 
-Crée automatiquement les entités
+---
 
-Entités créées
+## 🔌 Entités créées
 
-Pour un contrôleur ALLIN I/O 8, Home Assistant crée :
+Pour un contrôleur ALLIN I/O 8 standard, Home Assistant crée typiquement :
 
+```text
 switch.relay_1
 switch.relay_2
-...
+switch.relay_3
+switch.relay_4
+switch.relay_5
+switch.relay_6
+switch.relay_7
 switch.relay_8
+```
 
+Chaque entité `switch` représente un relais physique.
 
-Chaque relais expose :
+### Propriétés principales
 
-is_on (état)
+- `is_on` : état du relais (activé / désactivé)
+- `turn_on` / `turn_off` : commandes d’activation / désactivation
+- Regroupement dans l’onglet **Appareils** sous l’appareil : `ALLIN I/O 8 (IP)`.
 
-turn_on()
+---
 
-turn_off()
+## 🧩 Structure de l’intégration
 
-Attributs propres à l’appareil
-
-Structure de l’intégration
+```text
 custom_components/allin_io_8/
 │
-├── __init__.py          → Initialisation / coordinator / hub
-├── config_flow.py       → Configuration UI
-├── switch.py            → Entités relais
-├── const.py             → Constantes
-├── manifest.json        → Déclaration HA
-├── strings.json         → chaînes génériques HA
+├── __init__.py          → Initialisation de l’intégration, hub, coordinator
+├── config_flow.py       → Config flow (UI) pour l’ajout de l’intégration
+├── switch.py            → Déclaration des entités relais (SwitchEntity)
+├── const.py             → Constantes (DOMAIN, clés de config, manufacturer…)
+├── manifest.json        → Métadonnées Home Assistant (nom, version, dépendances)
+├── strings.json         → Clés communes Home Assistant
 └── translations/
     ├── en.json          → Traductions anglaises
     └── fr.json          → Traductions françaises
+```
 
-Dépannage
-Impossible de se connecter
+---
 
-Vérifier que l’adresse IP est correcte
+## ❗ Dépannage
 
-Vérifier que l’interface web du module ALLIN répond
+### 🔴 Impossible de se connecter
 
-Tester depuis un navigateur :
+Symptômes : message d’erreur `cannot_connect` pendant le config flow.
 
-http://<adresse_ip>
+Vérifier :
 
-Mauvais identifiants
+- l’adresse IP / hostname du module ALLIN ;
+- que le module répond bien sur le réseau (ping ou navigation HTTP) ;
+- que Home Assistant est sur le même réseau (LAN, VLAN, etc.).
 
-Le message "Invalid authentication" apparaît si l’API refuse la connexion.
-→ Vérifier username / password dans l’interface du module.
+Exemple de test rapide depuis un navigateur :
 
-Les relais ne mettent pas à jour leur état
+```text
+http://<adresse_ip_du_module>
+```
 
-Vérifier que la librairie interne renvoie bien state ou is_on
+---
 
-Envoyer un exemple d’état si besoin pour adapter switch.py
+### 🔴 Mauvais identifiants (`invalid_auth`)
 
-Tests & Validation
+Symptômes : message d’erreur `invalid_auth` pendant la configuration.
 
-L’intégration a été pensée pour fonctionner dans les environnements :
+Vérifier :
 
-Home Assistant OS
+- le nom d’utilisateur configuré sur le module ALLIN ;
+- le mot de passe associé ;
+- qu’il n’y a pas de caractère spécial mal saisi (espace en trop, copie-coller, etc.).
 
-Home Assistant Core
+Tu peux ensuite relancer le config flow dans Home Assistant.
 
-Containers Docker
+---
 
-Environnements offline
+### 🔴 Problème de mise à jour des états
 
-Licence
+Si les relais ne semblent pas se mettre à jour correctement dans l’UI :
 
-MIT – libre pour un usage personnel ou commercial.
+1. Vérifier les journaux de Home Assistant :  
+   **Paramètres → Système → Journaux**.
+2. Vérifier que le module ALLIN renvoie bien un état de relais exploitable par l’intégration.
+3. Si nécessaire, ouvrir une issue sur le dépôt avec :
+   - la version de Home Assistant,
+   - la version de l’intégration,
+   - un extrait de log pertinent.
 
-Contributions
+---
 
-Contributions, pull requests et améliorations bienvenues !
+## 🧪 Environnements ciblés
+
+Cette intégration est pensée pour fonctionner avec :
+
+- **Home Assistant OS**
+- **Home Assistant Core**
+- **Home Assistant en Docker**
+- Installations fixes ou embarquées (véhicules, ateliers, sites isolés…)
+
+---
+
+## 📜 Licence
+
+Tu peux préciser ici la licence de ton choix, par exemple :
+
+- MIT
+- Apache 2.0
+- ou toute autre licence open source.
+
+---
+
+## 🤝 Contributions
+
+Les contributions sont les bienvenues !
+
 Tu peux proposer :
 
-UI pour renommer les relais
+- des améliorations du code,
+- un support avancé (modes impulsionnels, temporisation, inversion de logique…),
+- un flux d’options pour personnaliser le comportement,
+- une meilleure UX (nommage automatisé, regroupements, icônes personnalisées),
+- une intégration HACS officielle.
 
-Support avancé (timers, impulsions…)
-
-Un mode diagnostic
-
-Support d’autres cartes ALLIN
+N’hésite pas à ouvrir une **issue** ou une **pull request** sur le dépôt GitHub.
