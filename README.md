@@ -192,9 +192,7 @@ Cette intégration est pensée pour fonctionner avec :
 
 Tu peux préciser ici la licence de ton choix, par exemple :
 
-- MIT
 - Apache 2.0
-- ou toute autre licence open source.
 
 ---
 
