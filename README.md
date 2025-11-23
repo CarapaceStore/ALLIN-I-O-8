@@ -162,8 +162,7 @@ Testé avec :
 
 ## 📜 Licence
 
-Licence open-source au choix (MIT recommandé).  
-Ajouter le fichier `LICENSE` si nécessaire.
+Licence open-source MIT
 
 ---
 
