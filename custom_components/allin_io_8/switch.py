@@ -1,14 +1,11 @@
-"""ALLIN I/O 8 Switch integration."""
+"""ALLIN Switch integration."""
 
 from __future__ import annotations
 
-from typing import Any
-
 from homeassistant.components.switch import SwitchEntity
-from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from homeassistant.core import HomeAssistant
+from homeassistant.config_entries import ConfigEntry
 
 from .const import DATA_COORDINATOR, DATA_HOST, DATA_HUB, DOMAIN, MANUFACTURER
 
@@ -16,67 +13,96 @@ from .const import DATA_COORDINATOR, DATA_HOST, DATA_HUB, DOMAIN, MANUFACTURER
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: ConfigEntry,
-    async_add_entities: AddEntitiesCallback,
+    async_add_entities,
 ) -> None:
+    """Set up ALLIN switch entities from a config entry."""
     data = hass.data[DOMAIN][entry.entry_id]
-    hub = data[DATA_HUB]
     coordinator = data[DATA_COORDINATOR]
+    hub = data[DATA_HUB]
     host = data[DATA_HOST]
 
-    entities: list[AllinSwitch] = [
-        AllinSwitch(coordinator, host, relay, idx)
-        for idx, relay in enumerate(getattr(hub, "relays", []), start=1)
-    ]
+    # Charge la liste des relais depuis la carte
+    await hub.async_get_relays()
 
+    entities: list[ALLINSwitch] = [
+        ALLINSwitch(coordinator, host, relay, entry.entry_id)
+        for relay in hub.relays
+    ]
     async_add_entities(entities)
 
 
-class AllinSwitch(CoordinatorEntity, SwitchEntity):
+class ALLINSwitch(CoordinatorEntity, SwitchEntity):
+    """ALLIN Switch Entity."""
 
-    _attr_has_entity_name = True
-
-    def __init__(self, coordinator, host: str, relay: Any, index: int) -> None:
+    def __init__(self, coordinator, host, relay, config_entry_id) -> None:
         super().__init__(coordinator)
         self._host = host
         self._relay = relay
-        self._index = index
+        self._config_entry_id = config_entry_id
 
-        relay_id = getattr(relay, "id", index)
-        self._attr_unique_id = f"{host}_relay_{relay_id}"
-        self._attr_name = f"Relay {relay_id}"
-
-        self._attr_device_info = {
-            "identifiers": {(DOMAIN, host)},
-            "manufacturer": MANUFACTURER,
-            "name": f"ALLIN I/O 8 ({host})",
-        }
+    # ---- Propriétés de base ----
 
     @property
     def available(self) -> bool:
+        """Return whether the entity is available."""
         return self.coordinator.last_update_success
 
     @property
-    def is_on(self) -> bool:
+    def name(self) -> str:
+        """Return the name of the entity."""
+        return f"Relay{self._relay.id}"
 
-        state = getattr(self._relay, "state", None)
-        if isinstance(state, bool):
-            return state
+    @property
+    def unique_id(self) -> str:
+        """Return the unique ID of the entity."""
+        return f"{self._config_entry_id}_relay{self._relay.id}"
 
-        if isinstance(state, (int, float)):
-            return bool(state)
+    @property
+    def device_info(self) -> dict:
+        """Return device info for linking entities to the device."""
+        return {
+            "identifiers": {(DOMAIN, self._host)},
+            "name": f"ALLIN I/O 8 ({self._host})",
+            "manufacturer": MANUFACTURER,
+        }
 
-        is_on_attr = getattr(self._relay, "is_on", None)
-        if isinstance(is_on_attr, bool):
-            return is_on_attr
+    @property
+    def entity_registry_enabled_default(self) -> bool:
+        """Return if the entity is enabled by default."""
+        return True
 
-        return False
+    @property
+    def icon(self) -> str:
+        """Icon to use in the frontend."""
+        return "mdi:dip-switch"
 
-    async def async_turn_on(self, **kwargs: Any) -> None:
+    # ---- État ----
+
+    @property
+    def is_on(self):
+        """Return the current state of the relay."""
+        relay = self._relay
+
+        # API pykmtronic : is_energised = True => ON
+        if hasattr(relay, "is_energised"):
+            return relay.is_energised
+
+        # fallback éventuel si la lib évolue
+        if hasattr(relay, "is_on"):
+            return relay.is_on
+
+        return None
+
+    # ---- Commandes ON / OFF ----
+
+    async def async_turn_on(self, **kwargs) -> None:
         """Turn the switch on."""
+        # API pykmtronic : energise()
         await self._relay.energise()
         await self.coordinator.async_request_refresh()
 
-    async def async_turn_off(self, **kwargs: Any) -> None:
+    async def async_turn_off(self, **kwargs) -> None:
         """Turn the switch off."""
+        # API pykmtronic : de_energise()
         await self._relay.de_energise()
         await self.coordinator.async_request_refresh()
