@@ -111,16 +111,58 @@ switch.relay_8
 
 ---
 
+## 🏷️ Personnalisation des noms (Options)
+
+Chaque relais peut recevoir un **nom personnalisé** depuis l’interface Home Assistant :
+
+**Paramètres → Appareils & services → ALLIN I/O 8 → ⚙️ Configurer**
+
+Vous pouvez par exemple renommer :
+- `Relay 1` → `Pompe à eau`
+- `Relay 2` → `Éclairage intérieur`
+- `Relay 3` → `Marche électrique`
+- …
+
+L’intégration se recharge automatiquement après modification. Les noms sont stockés dans `entry.options` et persistent entre redémarrages.
+
+---
+
+## ⏱️ Service `allin_io_8.pulse`
+
+Active un relais pendant une durée définie, puis le désactive automatiquement. Idéal pour gâches, klaxons, marches électriques.
+
+```yaml
+service: allin_io_8.pulse
+data:
+  entity_id: switch.relay_3
+  duration: 2.5   # secondes (0.1 → 60)
+```
+
+Disponible aussi depuis **Outils de développement → Services** avec un sélecteur natif HA.
+
+---
+
+## 🔬 Diagnostics
+
+L’intégration supporte le téléchargement de diagnostics natif HA :
+**Appareils & services → ALLIN I/O 8 → Télécharger les diagnostics**
+
+Le fichier exporté contient l’état du coordinator, la liste des relais et leur état, avec les identifiants/mots de passe automatiquement masqués.
+
+---
+
 ## 🧩 Structure du projet
 
 ```text
 custom_components/allin_io_8/
 │
-├── __init__.py          → Init + DataUpdateCoordinator + Hub
-├── config_flow.py       → Configuration UI
-├── switch.py            → Entités Switch
+├── __init__.py          → Init + DataUpdateCoordinator + service pulse
+├── config_flow.py       → Configuration UI + OptionsFlow
+├── switch.py            → Entités Switch (has_entity_name)
+├── diagnostics.py       → Téléchargement de diagnostics
 ├── const.py             → Constantes
 ├── manifest.json        → Déclaration Home Assistant
+├── services.yaml        → Schéma du service pulse
 ├── strings.json         → Clés internes HA
 └── translations/
     ├── en.json          → Traductions EN
