@@ -1,0 +1,46 @@
+# ─── Python ──────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.tox/
+
+# ─── Home Assistant (test/dev) ───────────────────────────
+.storage/
+home-assistant.log
+home-assistant_v2.db*
+secrets.yaml
+deps/
+
+# ─── IDE ─────────────────────────────────────────────────
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+*.iml
+*.swp
+*.swo
+
+# ─── OS ──────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# ─── Backup / temp ───────────────────────────────────────
+*.bak
+*.tmp
+*.orig
+*~
