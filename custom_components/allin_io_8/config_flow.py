@@ -13,7 +13,7 @@ from pykmtronic.hub import KMTronicHubAPI
 import voluptuous as vol
 
 from homeassistant import config_entries
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import aiohttp_client
@@ -22,7 +22,10 @@ from .const import (
     CONF_HOSTNAME,
     CONF_PASSWORD,
     CONF_USERNAME,
+    DEFAULT_TIMEOUT,
     DOMAIN,
+    OPTION_RELAY_PREFIX,
+    RELAY_COUNT,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -53,7 +56,7 @@ async def _validate_input(hass: HomeAssistant, data: dict[str, Any]) -> None:
     hub = KMTronicHubAPI(auth)
 
     try:
-        async with async_timeout.timeout(10):
+        async with async_timeout.timeout(DEFAULT_TIMEOUT):
             # Une mise à jour de l'état des relais oblige l'auth et le réseau
             await hub.async_update_relays()
     except aiohttp.ClientResponseError as err:
@@ -72,6 +75,14 @@ class AllinIO8ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Gestion du flux de configuration pour ALLIN I/O 8."""
 
     VERSION = 1
+
+    @staticmethod
+    @callback
+    def async_get_options_flow(
+        config_entry: config_entries.ConfigEntry,
+    ) -> AllinIO8OptionsFlow:
+        """Retourner le flux d'options pour cette entrée."""
+        return AllinIO8OptionsFlow(config_entry)
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
@@ -104,6 +115,41 @@ class AllinIO8ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             data_schema=STEP_USER_DATA_SCHEMA,
             errors=errors,
         )
+
+
+class AllinIO8OptionsFlow(config_entries.OptionsFlow):
+    """Flux d'options pour personnaliser les noms des relais."""
+
+    def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
+        """Initialiser le flux d'options."""
+        self.config_entry = config_entry
+
+    async def async_step_init(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
+        """Permettre la personnalisation du nom de chaque relais."""
+        if user_input is not None:
+            # Nettoyer les chaînes vides → fallback au nom par défaut
+            cleaned = {
+                key: value.strip()
+                for key, value in user_input.items()
+                if isinstance(value, str) and value.strip()
+            }
+            return self.async_create_entry(title="", data=cleaned)
+
+        current = self.config_entry.options
+        schema = vol.Schema(
+            {
+                vol.Optional(
+                    f"{OPTION_RELAY_PREFIX}{i}",
+                    default=current.get(
+                        f"{OPTION_RELAY_PREFIX}{i}", f"Relay {i}"
+                    ),
+                ): str
+                for i in range(1, RELAY_COUNT + 1)
+            }
+        )
+        return self.async_show_form(step_id="init", data_schema=schema)
 
 
 class CannotConnect(HomeAssistantError):
