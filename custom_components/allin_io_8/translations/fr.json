@@ -1,7 +1,7 @@
 {
     "config": {
         "abort": {
-            "already_configured": "L’appareil est déjà configuré"
+            "already_configured": "L'appareil est déjà configuré"
         },
         "error": {
             "cannot_connect": "Échec de la connexion",
@@ -13,7 +13,41 @@
                 "data": {
                     "host": "Hôte",
                     "password": "Mot de passe",
-                    "username": "Nom d’utilisateur"
+                    "username": "Nom d'utilisateur"
+                }
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "title": "Personnalisation des relais",
+                "description": "Définir un nom personnalisé pour chaque relais (laisser vide pour conserver le nom par défaut).",
+                "data": {
+                    "relay_1": "Relais 1",
+                    "relay_2": "Relais 2",
+                    "relay_3": "Relais 3",
+                    "relay_4": "Relais 4",
+                    "relay_5": "Relais 5",
+                    "relay_6": "Relais 6",
+                    "relay_7": "Relais 7",
+                    "relay_8": "Relais 8"
+                }
+            }
+        }
+    },
+    "services": {
+        "pulse": {
+            "name": "Pulse",
+            "description": "Active un relais pendant une durée puis le désactive.",
+            "fields": {
+                "entity_id": {
+                    "name": "Relais",
+                    "description": "Entité switch ALLIN à activer en impulsion."
+                },
+                "duration": {
+                    "name": "Durée",
+                    "description": "Durée d'activation en secondes (0.1 à 60)."
                 }
             }
         }
